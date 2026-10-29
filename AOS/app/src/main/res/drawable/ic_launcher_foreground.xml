@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "V 노선": the V of VibeDiary drawn as a route. The two ends are stations already
+     passed; the filled vertex is the moment you're in. Scaled into the 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.62"
+        android:scaleY="0.62"
+        android:translateY="-2">
+        <path
+            android:pathData="M28,30 L54,80 L80,30"
+            android:strokeColor="#138A5B"
+            android:strokeWidth="13"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M19,30 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0z"
+            android:strokeColor="#17201B"
+            android:strokeWidth="5" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M71,30 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0z"
+            android:strokeColor="#17201B"
+            android:strokeWidth="5" />
+        <path
+            android:fillColor="#17201B"
+            android:pathData="M43,80 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0z" />
+    </group>
+</vector>

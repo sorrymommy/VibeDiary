@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 종이: the app's paper ground -->
+    <color name="ic_launcher_background">#F2F4F1</color>
+</resources>
