@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.vibediary.app.ai.Transcriber
 import com.vibediary.app.capture.AudioRecorder
@@ -24,16 +25,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class NewEntryViewModel(app: Application) : AndroidViewModel(app) {
+class NewEntryViewModel(app: Application, private val savedState: SavedStateHandle) : AndroidViewModel(app) {
     private val repo = app.container.repository
     private val prefs = app.container.prefs
     private val recorder = AudioRecorder()
-    private var pendingPhoto: File? = null
+    // Kept in the saved state: the camera app is heavy enough that Android may kill this
+    // process while it is open, and the photo must still land here when the user comes back.
+    private var pendingPhoto: File?
+        get() = savedState.get<String>(KEY_PENDING_PHOTO)?.let(::File)
+        set(file) { savedState[KEY_PENDING_PHOTO] = file?.path }
     private var levelJob: Job? = null
     private var saved = false
 
-    /** One-shot: the dock button that opened this screen has been acted on. */
-    var startHandled = false
+    /** One-shot: the dock button that opened this screen has been acted on. Saved so a screen
+     *  restored after the camera doesn't open the camera again. */
+    var startHandled: Boolean
+        get() = savedState[KEY_START_HANDLED] ?: false
+        set(handled) { savedState[KEY_START_HANDLED] = handled }
 
     var note by mutableStateOf("")
     var photoFile by mutableStateOf<String?>(null)
@@ -368,12 +376,15 @@ class NewEntryViewModel(app: Application) : AndroidViewModel(app) {
         if (!saved) {
             // Discarded draft: don't leave orphaned media behind.
             listOfNotNull(photoFile, audioFile).forEach { repo.mediaFile(it).delete() }
-            pendingPhoto?.delete()
+            // pendingPhoto stays: with the camera open this is the system tearing the screen down,
+            // and the restored screen still needs that file for the shot.
         }
     }
 
     companion object {
         const val WAVE_BARS = 30
+        private const val KEY_PENDING_PHOTO = "pendingPhoto"
+        private const val KEY_START_HANDLED = "startHandled"
         private const val LEVEL_POLL_MS = 90L
         private const val TRANSCRIBE_RETRY_DELAY_MS = 1_500L
         private const val MIC_UNAVAILABLE = "지금은 마이크를 쓸 수 없어요. 통화 중이거나 다른 앱이 쓰고 있는지 확인해 주세요"
